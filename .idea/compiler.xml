@@ -7,6 +7,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="config-server" />
+        <module name="shared" />
         <module name="module-ms" />
         <module name="matiere-ms" />
         <module name="Gateaway" />
@@ -21,6 +22,7 @@
       <module name="config-server" options="-parameters" />
       <module name="matiere-ms" options="-parameters" />
       <module name="module-ms" options="-parameters" />
+      <module name="shared" options="-parameters" />
     </option>
   </component>
 </project>
