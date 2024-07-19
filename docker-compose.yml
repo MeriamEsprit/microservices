@@ -1,0 +1,72 @@
+version: '3.7'
+
+services:
+  config-server:
+    build:
+      context: ./config-server
+      dockerfile: Dockerfile
+    ports:
+      - "8888:8888"
+    networks:
+      - my-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+
+  eureka-server:
+    build:
+      context: ./EdgeMicroServices
+      dockerfile: Dockerfile
+    ports:
+      - "8761:8761"
+    networks:
+      - my-network
+    depends_on:
+      config-server:
+        condition: service_healthy
+    entrypoint: ["bash", "./wait-for-it.sh", "config-server", "8888", "--", "java", "-jar", "EdgeMicroServices.jar"]
+
+  gateway:
+    build:
+      context: ./Gateaway
+      dockerfile: Dockerfile
+    ports:
+      - "9012:9012"
+    networks:
+      - my-network
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    entrypoint: ["bash", "./wait-for-it.sh", "eureka-server", "8761", "--", "java", "-jar", "Gateaway.jar"]
+
+  matiere-ms:
+    build:
+      context: ./matiere-ms
+      dockerfile: Dockerfile
+    ports:
+      - "9091:9091"
+    networks:
+      - my-network
+    depends_on:
+      gateway:
+        condition: service_healthy
+    entrypoint: ["bash", "./wait-for-it.sh", "gateway", "9012", "--", "java", "-jar", "matiere-ms.jar"]
+
+  module-ms:
+    build:
+      context: ./module-ms
+      dockerfile: Dockerfile
+    ports:
+      - "9090:9090"
+    networks:
+      - my-network
+    depends_on:
+      gateway:
+        condition: service_healthy
+    entrypoint: ["bash", "./wait-for-it.sh", "gateway", "9012", "--", "java", "-jar", "module-ms.jar"]
+
+networks:
+  my-network:
+    driver: bridge

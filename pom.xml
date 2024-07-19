@@ -9,12 +9,12 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>shared</module>
         <module>config-server</module>
         <module>EdgeMicroServices</module>
         <module>Gateaway</module>
         <module>matiere-ms</module>
         <module>module-ms</module>
-        <module>shared</module>
     </modules>
 
     <properties>
